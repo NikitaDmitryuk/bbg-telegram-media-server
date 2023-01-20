@@ -5,6 +5,7 @@ from telegram.ext import ContextTypes, CommandHandler, filters, MessageHandler
 
 from utils import download_torrent
 import global_variable
+import sqlite_utils
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -18,11 +19,12 @@ async def download_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await file.download_to_drive(full_file)
         await context.bot.send_message(chat_id=update.effective_chat.id, text="Authorisation Done. Wait for the download of the torrent file to complete.")
 
-        torrent_status = await download_torrent(update, context, full_file)
+        torrent_status = await download_torrent(update, context, file.file_id)
 
         if torrent_status.is_seeding:
             print(torrent_status.name, 'complete')
             await context.bot.send_message(chat_id=update.effective_chat.id, text="The movie \"{}\" is ready to watch!".format(torrent_status.name))
+            sqlite_utils.set_loaded(torrent_status.name)
         else:
             print(torrent_status.name, 'failed')
             await context.bot.send_message(chat_id=update.effective_chat.id, text="\"{}\": An error has occurred!".format(torrent_status.name))

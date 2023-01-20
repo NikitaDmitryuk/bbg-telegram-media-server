@@ -1,55 +1,68 @@
 import os
 import time
+import shutil
 
 import libtorrent as lt
-import shutil
 from telegram import Update
 from telegram.ext import ContextTypes
+import aiofiles.os as aioos
 
 import global_variable
+import sqlite_utils
 
-async def remove(path):
-    """ param <path> could either be relative or absolute. """
-    if os.path.isfile(path) or os.path.islink(path):
-        os.remove(path)  # remove the file
-    elif os.path.isdir(path):
-        shutil.rmtree(path)  # remove dir and all contains
+
+async def remove(file):
+
+    if await aioos.path.exists(file):
+        if await aioos.path.isfile(file) or await aioos.path.islink(file):
+            await aioos.remove(file)
+        elif await aioos.path.isdir(file):
+            shutil.rmtree(file)
+        else:
+            raise ValueError("Undefined file format {}".format(file))
     else:
-        raise ValueError("file {} is not a file or dir.".format(path))
+        raise ValueError("file {} not exists.".format(file))
 
-async def download_torrent(update: Update, context: ContextTypes.DEFAULT_TYPE, full_file):
+
+async def download_torrent(update: Update, context: ContextTypes.DEFAULT_TYPE, file_id):
+    full_file = os.path.join(global_variable.PATH_TO_SAVE_TORRENT_FILE, file_id)
     info = lt.torrent_info(full_file)
-    ses = lt.session({'listen_interfaces': '0.0.0.0:6881'})
-    h = ses.add_torrent({'ti': info, 'save_path': global_variable.PATH_TO_SAVE_TORRENT_FILE})
-    s = h.status()
-    await context.bot.send_message(chat_id=update.effective_chat.id, text="starting " + s.name)
-    print('starting', s.name)
+    session = lt.session({'listen_interfaces': '0.0.0.0:6881'})
+    handle = session.add_torrent({'ti': info, 'save_path': global_variable.PATH_TO_SAVE_TORRENT_FILE})
+    status = handle.status()
+    await context.bot.send_message(chat_id=update.effective_chat.id, text="starting " + status.name)
+    print('starting', status.name)
+    sqlite_utils.add_movie(status.name, status.name, file_id)
     i = 1
     current_time = 0
     time_step = 10
+    time_out = 600
 
-    while (not s.is_seeding):
+    while (not status.is_seeding):
         
-        if i == 1 and current_time == 600:
+        if i == 1 and current_time >= time_out:
             await remove(full_file)
-            await remove(os.path.join(global_variable.PATH_TO_SAVE_TORRENT_FILE, h.status().name))
+            await remove(os.path.join(global_variable.PATH_TO_SAVE_TORRENT_FILE, status.name))
+            await context.bot.send_message(chat_id=update.effective_chat.id, text='\"{}\": time out!'.format(status.name))
+            sqlite_utils.remove_movie(status.name)
+            session.remove_torrent(handle)
             break
 
         print('\r%.2f%% complete (down: %.1f kB/s up: %.1f kB/s peers: %d) %s' % (
-            s.progress * 100, s.download_rate / 1000, s.upload_rate / 1000,
-            s.num_peers, s.state), end=' ')
+            status.progress * 100, status.download_rate / 1000, status.upload_rate / 1000,
+            status.num_peers, status.state), end=' ')
 
-        if round(s.progress * 100) // 10 >= i:
-            await context.bot.send_message(chat_id=update.effective_chat.id, text='%s: %.2f%% complete (down: %.1f MB/s up: %.1f kB/s peers: %d)' % (h.status().name, s.progress * 100, s.download_rate / 1048576, s.upload_rate / 1024, s.num_peers))
+        if round(status.progress * 100) // 10 >= i:
+            await context.bot.send_message(chat_id=update.effective_chat.id, text='%s: %.2f%% complete (down: %.1f MB/s up: %.1f kB/s peers: %d)' % (handle.status().name, status.progress * 100, status.download_rate / 1048576, status.upload_rate / 1024, status.num_peers))
             i += 1
 
-        alerts = ses.pop_alerts()
+        alerts = session.pop_alerts()
         for a in alerts:
             if a.category() & lt.alert.category_t.error_notification:
                 print(a)
 
         time.sleep(time_step)
         current_time += time_step
-        s = h.status()
+        status = handle.status()
     
-    return s
+    return status
