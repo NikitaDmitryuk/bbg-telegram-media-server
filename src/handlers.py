@@ -1,8 +1,8 @@
 import os
+import threading
 
 from telegram import Update
 from telegram.ext import ContextTypes, CommandHandler, filters, MessageHandler
-import asyncio
 
 from utils import download_torrent
 import global_variable
@@ -11,8 +11,31 @@ import utils
 
 AUTHORIZATION_FAILED_MESSAGE = "Authorisation failed. Use /login <password>."
 
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await context.bot.send_message(chat_id=update.effective_chat.id, text="Send me the torrent file and password in one message!")
+    await context.bot.send_message(chat_id=update.effective_chat.id, text="Send me:\n/login <password> - for registration\n<torrent_file> - to download a file\n/getlist - to get a list of files\n/rm <file_id> - to delete a file")
+
+
+async def remove_movie(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    HINT = "Use /getlist to get file id, then /rm <file_id>"
+    if sqlite_utils.check_user(update.effective_chat.id):
+        movie_id = update.message.text.replace('/rm', '').replace(' ', '')
+        if movie_id.isnumeric():
+            movie_files = sqlite_utils.get_movie_by_id(movie_id)
+            if movie_files is not None:
+                movie_file = os.path.join(global_variable.PATH_TO_SAVE_TORRENT_FILE, movie_files[1])
+                torrent_file = os.path.join(global_variable.PATH_TO_SAVE_TORRENT_FILE, movie_files[2])
+                utils.delete(movie_file)
+                utils.delete(torrent_file)
+                sqlite_utils.remove_movie(movie_id)
+                await context.bot.send_message(chat_id=update.effective_chat.id, text="Movie \"{}\" deleted!".format(movie_files[0]))
+            else:
+                await context.bot.send_message(chat_id=update.effective_chat.id, text=HINT)
+        else:
+            await context.bot.send_message(chat_id=update.effective_chat.id, text=HINT)
+    else:
+        await context.bot.send_message(chat_id=update.effective_chat.id, text=AUTHORIZATION_FAILED_MESSAGE)
+
 
 async def get_movie_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if sqlite_utils.check_user(update.effective_chat.id):
@@ -23,6 +46,7 @@ async def get_movie_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await context.bot.send_message(chat_id=update.effective_chat.id, text="Movie list is empty!")
     else:
         await context.bot.send_message(chat_id=update.effective_chat.id, text=AUTHORIZATION_FAILED_MESSAGE)
+
 
 async def authorization(update: Update, context: ContextTypes.DEFAULT_TYPE):
     auth_status = False
@@ -35,6 +59,7 @@ async def authorization(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await context.bot.send_message(chat_id=update.effective_chat.id, text=AUTHORIZATION_FAILED_MESSAGE)
 
+
 async def download_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if sqlite_utils.check_user(update.effective_chat.id):
@@ -42,22 +67,17 @@ async def download_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
         full_file = os.path.join(global_variable.PATH_TO_SAVE_TORRENT_FILE, file.file_id)
         await file.download_to_drive(full_file)
 
-        torrent_task = asyncio.create_task(download_torrent(update, context, file.file_id))
-        await torrent_task
-        torrent_status = torrent_task.result()
+        thread = threading.Thread(target=download_torrent, args=(file.file_id,))
+        thread.start()
 
-        if torrent_status.is_seeding:
-            print(torrent_status.name, 'complete')
-            await context.bot.send_message(chat_id=update.effective_chat.id, text="The movie \"{}\" is ready to watch!".format(torrent_status.name))
-            sqlite_utils.set_loaded(torrent_status.name)
-        else:
-            print(torrent_status.name, 'failed')
-            await context.bot.send_message(chat_id=update.effective_chat.id, text="\"{}\": An error has occurred!".format(torrent_status.name))
+        context.bot.send_message(chat_id=update.effective_chat.id, text="Download started!")
     else:
         await context.bot.send_message(chat_id=update.effective_chat.id, text=AUTHORIZATION_FAILED_MESSAGE)
 
+
 start_handler = CommandHandler('start', start)
+remove_handler = CommandHandler('rm', remove_movie)
 get_movie_list_handler = CommandHandler('getlist', get_movie_list)
 login_handler = CommandHandler('login', authorization)
 download_handler = MessageHandler(filters.Document.ALL, download_file)
-application_handlers = [start_handler, get_movie_list_handler, login_handler, download_handler]
+application_handlers = [start_handler, remove_handler, get_movie_list_handler, login_handler, download_handler]

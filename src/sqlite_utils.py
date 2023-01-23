@@ -6,11 +6,12 @@ import global_variable
 def create_db(path_database):
     conn = sqlite3.connect(path_database)
     conn.execute('''CREATE TABLE Movie 
-                (ID             INTEGER     NOT NULL        PRIMARY KEY     AUTOINCREMENT,
-                NAME            TEXT        NOT NULL,
-                UPLOADED_FILE   TEXT        NOT NULL,
-                TORRENT_FILE    TEXT        NOT NULL,
-                DOWNLOADED      BOOLEAN     NOT NULL        DEFAULT 0       CHECK (DOWNLOADED IN (0, 1))
+                (ID                     INTEGER     NOT NULL        PRIMARY KEY     AUTOINCREMENT,
+                NAME                    TEXT        NOT NULL,
+                UPLOADED_FILE           TEXT        NOT NULL,
+                TORRENT_FILE            TEXT        NOT NULL,
+                DOWNLOADED_PERCENTAGE   INTEGER     NOT NULL        DEFAULT 0       CHECK (DOWNLOADED_PERCENTAGE BETWEEN 0 AND 100),
+                DOWNLOADED              BOOLEAN     NOT NULL        DEFAULT 0       CHECK (DOWNLOADED IN (0, 1))
                 );''')
 
     conn.execute('''CREATE TABLE User
@@ -49,12 +50,22 @@ def set_loaded(name):
     conn.commit()
     conn.close()
 
-def remove_movie(name):
+def get_movie_by_id(movie_id):
+    conn = connection()
+    cur = conn.cursor()
+    res = cur.execute('''SELECT NAME, UPLOADED_FILE, TORRENT_FILE FROM Movie 
+                    WHERE ID = {id}'''.format(id=movie_id)
+                    )
+    movie_files = res.fetchall()
+    conn.close()
+    return movie_files[0] if len(movie_files) > 0 else None
+
+def remove_movie(movi_id):
     conn = connection()
     cur = conn.cursor()
     cur.execute('''DELETE FROM Movie
-                    WHERE NAME = '{name}'
-                '''.format(name=name)
+                    WHERE ID = {id}
+                '''.format(id=movi_id)
                 )
     conn.commit()
     conn.close()
@@ -62,7 +73,7 @@ def remove_movie(name):
 def get_movie_list():
     conn = connection()
     cur = conn.cursor()
-    res = cur.execute('''SELECT ID, NAME, DOWNLOADED FROM Movie ORDER BY ID''')
+    res = cur.execute('''SELECT ID, NAME, DOWNLOADED, DOWNLOADED_PERCENTAGE FROM Movie ORDER BY ID''')
     list_of_movie = res.fetchall()
     conn.close()
     return list_of_movie
@@ -80,6 +91,18 @@ def login(password, chat_id, user_name):
         return True
     else:
         return False
+
+def update_downloaded_percentage(name, percentage):
+    print(name, percentage)
+    conn = connection()
+    cur = conn.cursor()
+    cur.execute('''UPDATE Movie
+                    SET DOWNLOADED_PERCENTAGE = {percentage}
+                    WHERE NAME = '{name}'
+                '''.format(name=name, percentage=percentage)
+                )
+    conn.commit()
+    conn.close()
 
 def check_user(chat_id):
     conn = connection()
