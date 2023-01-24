@@ -2,8 +2,8 @@ import logging
 from telegram.ext import ApplicationBuilder
 
 from handlers import application_handlers
-import global_variable
-import sqlite_utils
+import config
+import db_utils
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -21,6 +21,9 @@ def get_application(token: str):
 
 
 def main():
-    global_variable.init_global_variable()
-    sqlite_utils.connection()
-    get_application(global_variable.get_token()).run_polling()
+    db_utils.connection()
+    get_application(config.TOKEN).run_polling()
+
+
+if __name__ == '__main__':
+    main()

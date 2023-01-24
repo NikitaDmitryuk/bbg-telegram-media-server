@@ -13,7 +13,7 @@ jobs:
 
       - name: Install python depends
         shell: bash
-        run: pip install libtorrent python-telegram-bot
+        run: pip install libtorrent python-telegram-bot pyinstaller
 
       - name: Build bbg-telegram-media-server
         shell: bash
