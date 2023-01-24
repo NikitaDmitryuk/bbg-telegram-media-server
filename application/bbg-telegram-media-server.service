@@ -4,7 +4,6 @@ After=minidlna.service
 PartOf=minidlna.service
 Requires=minidlna.service
 
-
 [Service]
 Restart=always
 Environment="SCRIPT_ARGS=%I"
