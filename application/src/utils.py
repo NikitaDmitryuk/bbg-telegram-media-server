@@ -25,10 +25,10 @@ def delete(path):
 
 
 def download_torrent(file_id):
-    full_file = os.path.join(global_variable.PATH_TO_SAVE_TORRENT_FILE, file_id)
+    full_file = os.path.join(global_variable.get_path_to_save_torrent_file(), file_id)
     info = lt.torrent_info(full_file)
     session = lt.session({'listen_interfaces': '0.0.0.0:6881'})
-    handle = session.add_torrent({'ti': info, 'save_path': global_variable.PATH_TO_SAVE_TORRENT_FILE})
+    handle = session.add_torrent({'ti': info, 'save_path': global_variable.get_path_to_save_torrent_file()})
     status = handle.status()
     print('starting', status.name)
     sqlite_utils.add_movie(status.name, status.name, file_id)
@@ -37,11 +37,11 @@ def download_torrent(file_id):
     time_step = 10
     time_out = 600
 
-    while (not status.is_seeding):
+    while not status.is_seeding:
         
         if i == 1 and current_time >= time_out:
             delete(full_file)
-            delete(os.path.join(global_variable.PATH_TO_SAVE_TORRENT_FILE, status.name))
+            delete(os.path.join(global_variable.get_path_to_save_torrent_file(), status.name))
             sqlite_utils.remove_movie(status.name)
             session.remove_torrent(handle)
             break
@@ -73,4 +73,7 @@ def download_torrent(file_id):
 
 async def print_movie_list(movie_list, update: Update, context: ContextTypes.DEFAULT_TYPE):
     for movie in movie_list:
-        await context.bot.send_message(chat_id=update.effective_chat.id, text="ID: {}\nNAME: {}\nSTATUS: {}\n".format(movie[0], movie[1], "downloaded" if movie[2] == 1 else "uploading - {}%".format(movie[3])))
+        await context.bot.send_message(chat_id=update.effective_chat.id, text="ID: {}\nNAME: {}\nSTATUS: {}\n"
+                                       .format(movie[0], movie[1],
+                                               "downloaded" if movie[2] == 1 else
+                                               "uploading - {}%".format(movie[3])))

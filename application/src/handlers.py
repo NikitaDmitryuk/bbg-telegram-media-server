@@ -13,7 +13,10 @@ AUTHORIZATION_FAILED_MESSAGE = "Authorisation failed. Use /login <password>."
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await context.bot.send_message(chat_id=update.effective_chat.id, text="Send me:\n/login <password> - for registration\n<torrent_file> - to download a file\n/getlist - to get a list of files\n/rm <file_id> - to delete a file")
+    await context.bot.send_message(chat_id=update.effective_chat.id, text="Send me:\n/login <password> - for "
+                                                                          "registration\n<torrent_file> - to download "
+                                                                          "a file\n/getlist - to get a list of "
+                                                                          "files\n/rm <file_id> - to delete a file")
 
 
 async def remove_movie(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -23,8 +26,8 @@ async def remove_movie(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if movie_id.isnumeric():
             movie_files = sqlite_utils.get_movie_by_id(movie_id)
             if movie_files is not None:
-                movie_file = os.path.join(global_variable.PATH_TO_SAVE_TORRENT_FILE, movie_files[1])
-                torrent_file = os.path.join(global_variable.PATH_TO_SAVE_TORRENT_FILE, movie_files[2])
+                movie_file = os.path.join(global_variable.get_path_to_save_torrent_file(), movie_files[1])
+                torrent_file = os.path.join(global_variable.get_path_to_save_torrent_file(), movie_files[2])
                 utils.delete(movie_file)
                 utils.delete(torrent_file)
                 sqlite_utils.remove_movie(movie_id)
@@ -64,7 +67,7 @@ async def download_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if sqlite_utils.check_user(update.effective_chat.id):
         file = await context.bot.get_file(update.message.document)
-        full_file = os.path.join(global_variable.PATH_TO_SAVE_TORRENT_FILE, file.file_id)
+        full_file = os.path.join(global_variable.get_path_to_save_torrent_file(), file.file_id)
         await file.download_to_drive(full_file)
 
         thread = threading.Thread(target=download_torrent, args=(file.file_id,))

@@ -3,6 +3,7 @@ import os
 
 import global_variable
 
+
 def create_db(path_database):
     conn = sqlite3.connect(path_database)
     conn.execute('''CREATE TABLE Movie 
@@ -22,12 +23,14 @@ def create_db(path_database):
     conn.commit()
     return conn
 
+
 def connection():
-    path_database = os.path.join(global_variable.PATH_TO_SAVE_TORRENT_FILE, 'movie.db')
+    path_database = os.path.join(global_variable.get_path_to_save_torrent_file(), 'movie.db')
     if os.path.exists(path_database):
         return sqlite3.connect(path_database)
     else:
         return create_db(path_database)
+
 
 def add_movie(name, uploaded_file_name, torrent_file_name):
     conn = connection()
@@ -38,6 +41,7 @@ def add_movie(name, uploaded_file_name, torrent_file_name):
                 )
     conn.commit()
     conn.close()
+
 
 def set_loaded(name):
     conn = connection()
@@ -50,15 +54,17 @@ def set_loaded(name):
     conn.commit()
     conn.close()
 
+
 def get_movie_by_id(movie_id):
     conn = connection()
     cur = conn.cursor()
     res = cur.execute('''SELECT NAME, UPLOADED_FILE, TORRENT_FILE FROM Movie 
                     WHERE ID = {id}'''.format(id=movie_id)
-                    )
+                      )
     movie_files = res.fetchall()
     conn.close()
     return movie_files[0] if len(movie_files) > 0 else None
+
 
 def remove_movie(movi_id):
     conn = connection()
@@ -70,6 +76,7 @@ def remove_movie(movi_id):
     conn.commit()
     conn.close()
 
+
 def get_movie_list():
     conn = connection()
     cur = conn.cursor()
@@ -78,8 +85,9 @@ def get_movie_list():
     conn.close()
     return list_of_movie
 
+
 def login(password, chat_id, user_name):
-    if password == global_variable.PASSWORD:
+    if password == global_variable.get_password():
         conn = connection()
         cur = conn.cursor()
         cur.execute('''INSERT INTO User (NAME, CHAT_ID)
@@ -91,6 +99,7 @@ def login(password, chat_id, user_name):
         return True
     else:
         return False
+
 
 def update_downloaded_percentage(name, percentage):
     print(name, percentage)
@@ -104,13 +113,14 @@ def update_downloaded_percentage(name, percentage):
     conn.commit()
     conn.close()
 
+
 def check_user(chat_id):
     conn = connection()
     cur = conn.cursor()
     res = cur.execute('''SELECT * FROM User
                     WHERE CHAT_ID = {chat_id}
                     '''.format(chat_id=chat_id)
-                    )
+                      )
     check_status = True if len(res.fetchall()) > 0 else False
     conn.close()
     return check_status

@@ -1,3 +1,0 @@
-[submodule "telegram-tokens"]
-	path = telegram-tokens
-	url = https://github.com/NikitaDmitryuk/telegram-tokens.git
