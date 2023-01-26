@@ -2,7 +2,7 @@
 
 version=0.1
 revision=1
-architecture=arm32
+architecture=armhf
 
 package_dir="bbg-telegram-media-server_${version}-${revision}_${architecture}"
 build_dir="build-$version"
