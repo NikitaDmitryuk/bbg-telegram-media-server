@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+        image: dockcross/linux-armv7:latest
     steps:
       - uses: actions/checkout@v3
 
@@ -17,7 +19,7 @@ jobs:
 
       - name: Build bbg-telegram-media-server
         shell: bash
-        run: cd build && ./build.sh
+        run: ls && cd build && ./build.sh
 
       - name: Release
         uses: softprops/action-gh-release@v1
