@@ -7,7 +7,7 @@ Requires=minidlna.service
 [Service]
 Restart=always
 Environment="SCRIPT_ARGS=%I"
-ExecStart=/usr/local/bin/bbg-telegram-media-server $SCRIPT_ARGS
+ExecStart=/usr/local/bin/bbg-telegram-media-server "${SCRIPT_ARGS}"
 
 [Install]
 WantedBy=multi-user.target

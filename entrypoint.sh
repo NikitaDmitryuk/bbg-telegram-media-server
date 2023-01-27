@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 version=0.1
 revision=1
@@ -9,11 +9,11 @@ build_dir="build-$version"
 package_bin_dir=${package_dir}/usr/local/bin
 
 mkdir -p $build_dir
-cp -r ../application/* $build_dir
+cp -r application/* $build_dir
 
 mkdir -p $package_bin_dir
 
-pyinstaller $build_dir/bbg-telegram-media-server.py --paths src --onefile --clean --distpath $package_bin_dir --specpath $build_dir --workpath $build_dir
+pyinstaller ${build_dir}/bbg-telegram-media-server.py --paths ${build_dir}/src --onefile --clean --distpath $package_bin_dir --specpath $build_dir --workpath $build_dir
 
 mkdir ${package_dir}/DEBIAN
 touch ${package_dir}/DEBIAN/control
