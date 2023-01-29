@@ -6,55 +6,12 @@ on:
       - 'v*'
 
 jobs:
-  create_docker_image:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      -
-        name: Build docker container
-        uses: docker/build-push-action@v3
-        with:
-          file: ./Dockerfile
-          platforms: linux/arm/v7
-          tags: armv7:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          outputs: type=docker,dest=/tmp/armv7.tar
-      
-      -
-        name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: armv7
-          path: /tmp/armv7.tar
-
   build_and_release:
-    needs: create_docker_image
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      -
-        name: Download artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: armv7
-          path: /tmp
-      -
-        name: Load image
-        run: |
-          docker load --input /tmp/armv7.tar
-          docker image ls -a
-
       - name: Build bbg-telegram-media-server
         shell: bash
-        run: docker run --platform linux/arm/v7 -it -v "${PWD}":/workdir armv7:latest ./entrypoint.sh
+        run: ./dockcross-linux-armv7a-lts bash -c './entrypoint.sh'
 
       - name: Create Release
         uses: softprops/action-gh-release@v1

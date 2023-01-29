@@ -44,7 +44,7 @@ def download_torrent(file_id: str):
 
         print('\r%.2f%% complete (down: %.1f kB/s up: %.1f kB/s peers: %d) %s' % (
             status.progress * 100, status.download_rate / 1000, status.upload_rate / 1000,
-            status.num_peers, status.state), end=' ')
+            status.num_peers, status.state))
 
         if round(status.progress * 100) // 10 >= i:
             print("\"{}\": {}%".format(status.name, status.progress * 100))

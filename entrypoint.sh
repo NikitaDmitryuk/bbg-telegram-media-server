@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 version=0.1
 revision=1
 architecture=armhf
@@ -8,14 +10,27 @@ package_dir="bbg-telegram-media-server_${version}-${revision}_${architecture}"
 build_dir="build-$version"
 package_bin_dir=${package_dir}/usr/local/bin
 
+sudo dpkg --add-architecture armhf
+sudo apt-get update
+sudo apt-get install -y gcc-arm-linux-gnueabihf python3-pip python3-libtorrent python3-venv python3-dev libpython3-dev:armhf
+
 mkdir -p $build_dir
+ls
 cp -r application/* $build_dir
 
 mkdir -p $package_bin_dir
 
-pyinstaller ${build_dir}/bbg-telegram-media-server.py --paths ${build_dir}/src --onefile --clean --distpath $package_bin_dir --specpath $build_dir --workpath $build_dir
+python3 -m venv bbg-telegram-media-server-env
+source bbg-telegram-media-server-env/bin/activate
+pip3 install python-telegram-bot cython
 
-mkdir ${package_dir}/DEBIAN
+cd $build_dir
+
+python3 bbg-telegram-media-server-build.py build_ext --inplace
+
+cd ..
+
+mkdir -p ${package_dir}/DEBIAN
 touch ${package_dir}/DEBIAN/control
 
 cat > ${package_dir}/DEBIAN/control <<EOF
