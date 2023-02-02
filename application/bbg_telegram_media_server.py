@@ -1,3 +1,6 @@
+#!python
+#cython: language_level=3
+
 import logging
 from telegram.ext import ApplicationBuilder
 

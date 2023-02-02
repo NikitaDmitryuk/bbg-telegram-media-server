@@ -9,7 +9,7 @@ jobs:
   build_and_release:
     runs-on: ubuntu-latest
     steps:
-      - name: Build bbg-telegram-media-server
+      - name: Build bbg-telegram-media-server.py
         shell: bash
         run: ./dockcross-linux-armv7a-lts bash -c './entrypoint.sh'
 
