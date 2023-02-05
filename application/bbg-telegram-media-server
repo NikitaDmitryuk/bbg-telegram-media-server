@@ -1,0 +1,5 @@
+#!/usr/bin/env python3
+
+import src.bbg_telegram_media_server as bbg_telegram_media_server
+
+bbg_telegram_media_server.main()
