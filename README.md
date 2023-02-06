@@ -12,5 +12,5 @@ Then enable the services by specifying the path to the folder with the files. Ot
 
 ```bash
 sudo systemctl enable --now minidlna.service
-sudo systemctl enable --now bbg-telegram-media-server@"/path/to/files".service
+sudo systemctl enable --now bbg_telegram_media_server@"/path/to/files".service
 ```

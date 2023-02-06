@@ -1,0 +1,2 @@
+libtorrent
+python-telegram-bot
