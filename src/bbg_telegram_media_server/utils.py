@@ -7,8 +7,8 @@ import libtorrent as lt
 from telegram import Update
 from telegram.ext import ContextTypes
 
-import config
-import db_utils
+import bbg_telegram_media_server.config as config
+import bbg_telegram_media_server.db_utils as db_utils
 
 
 def delete(path: str) -> None:

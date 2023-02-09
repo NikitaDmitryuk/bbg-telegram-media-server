@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(
     name='bbg_telegram_media_server',
@@ -10,7 +10,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'bbg-telegram-media-server = bbg_telegram_media_server:main',
+            'bbg-telegram-media-server = bbg_telegram_media_server.bbg_telegram_media_server:main',
         ]
     }
 )

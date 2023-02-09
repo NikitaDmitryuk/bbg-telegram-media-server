@@ -1,9 +1,9 @@
 import logging
 from telegram.ext import ApplicationBuilder
 
-from handlers import application_handlers
-import config
-import db_utils
+from bbg_telegram_media_server.handlers import application_handlers
+import bbg_telegram_media_server.config as config
+import bbg_telegram_media_server.db_utils as db_utils
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
