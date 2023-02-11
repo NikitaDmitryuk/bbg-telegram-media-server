@@ -2,7 +2,7 @@
 set -xe
 version=$(cat version)
 revision=1
-architecture=any
+architecture=all
 package_dir="bbg-telegram-media-server_${version}-${revision}_${architecture}"
 src_dir=src
 package_bin_dir=${package_dir}/usr/local/bin
