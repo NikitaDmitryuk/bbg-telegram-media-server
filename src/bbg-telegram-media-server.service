@@ -7,7 +7,7 @@ Requires=minidlna.service
 [Service]
 Restart=always
 Environment=/etc/.bbg-telegram-media-server-conf
-ExecStart=/usr/local/bin/bbg-telegram-media-server $WORKDIR
+ExecStart=bbg-telegram-media-server $WORKDIR
 
 [Install]
 WantedBy=multi-user.target
