@@ -6,7 +6,7 @@ from telegram.ext import ContextTypes, CommandHandler, filters, MessageHandler
 
 from bbg_telegram_media_server.utils import download_torrent
 import bbg_telegram_media_server.config as config
-import bbg_telegram_media_server.db_utils as db_utild
+import bbg_telegram_media_server.db_utils as db_utils
 import bbg_telegram_media_server.utils as utils
 
 AUTHORIZATION_FAILED_MESSAGE = "Authorisation failed. Use /login <password>."

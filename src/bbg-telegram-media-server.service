@@ -5,8 +5,7 @@ PartOf=minidlna.service
 Requires=minidlna.service
 
 [Service]
-Restart=always
-Environment=/etc/.bbg-telegram-media-server-conf
+EnvironmentFile=/etc/bbg-telegram-media-server/bbg-telegram-media-server.conf
 ExecStart=bbg-telegram-media-server $WORKDIR
 
 [Install]
