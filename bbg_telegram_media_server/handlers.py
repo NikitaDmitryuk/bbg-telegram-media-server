@@ -4,10 +4,10 @@ import threading
 from telegram import Update
 from telegram.ext import ContextTypes, CommandHandler, filters, MessageHandler
 
-from bbg_telegram_media_server.utils import download_torrent
-import bbg_telegram_media_server.config as config
-import bbg_telegram_media_server.db_utils as db_utils
-import bbg_telegram_media_server.utils as utils
+from .utils import download_torrent
+from . import config
+from . import db_utils
+from . import utils
 
 AUTHORIZATION_FAILED_MESSAGE = "Authorisation failed. Use /login <password>."
 START_MESSAGE = "Send me:\n/login <password> - for registration\n<torrent_file> - to download a file\n/getlist - to " \

@@ -1,20 +1,19 @@
-#!/usr/bin/env python3
+from setuptools import setup, find_packages
 
-from setuptools import setup
+with open("version", "r") as f:
+    version = f.read().strip()
 
-with open('version', 'r') as file:
-    version = file.readline().replace('\n', '')
+with open("requirements.txt", "r") as f:
+    requirements = f.read().splitlines()
 
 setup(
-    name='bbg_telegram_media_server',
+    name="bbg-telegram-media-server",
     version=version,
-    python_requires='>3.5',
-    package_dir={'bbg_telegram_media_server': 'src/bbg_telegram_media_server'},
-    packages=['bbg_telegram_media_server'],
-    install_requires=['python-telegram-bot'],
+    packages=find_packages(),
+    install_requires=requirements,
     entry_points={
-        'console_scripts': [
-            'bbg-telegram-media-server = bbg_telegram_media_server.bbg_telegram_media_server:main',
-        ]
-    }
+        "console_scripts": [
+            "bbg-telegram-media-server=bbg_telegram_media_server.bbg_telegram_media_server:main"
+        ],
+    },
 )

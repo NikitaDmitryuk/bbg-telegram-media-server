@@ -1,7 +1,7 @@
 import sqlite3
 import os
 
-import bbg_telegram_media_server.config as config
+from . import config
 
 
 def create_db(path_database: str):
