@@ -1,14 +1,12 @@
 import logging
+
 from telegram.ext import ApplicationBuilder
 
-from .handlers import application_handlers
 from . import config
 from . import db_utils
+from .handlers import application_handlers
 
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
-)
+logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
 
 
 def get_application(token: str):
@@ -25,5 +23,5 @@ def main():
     get_application(config.TOKEN).run_polling()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
