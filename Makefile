@@ -18,7 +18,7 @@ debug:
 	PYTHONDONTWRITEBYTECODE=1 poetry run python bbg-telegram-media-server.py
 
 build:
-	./build.sh
+	makepkg -f --syncdeps --noconfirm
 
 clear:
 	find . -depth -type d -name "__pycache__" -exec rm -r {} \;

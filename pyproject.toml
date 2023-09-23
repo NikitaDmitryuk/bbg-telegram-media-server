@@ -15,7 +15,7 @@ order_by_type = false
 sections = ["FUTURE","STDLIB","THIRDPARTY","FIRSTPARTY","LOCALFOLDER"]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.11"
 libtorrent = "^2.0.9"
 python-telegram-bot = "^20.5"
 nuitka = "^1.8.2"
