@@ -1,23 +1,22 @@
 pkgbase=bbg-telegram-media-server
 pkgname=('bbg-telegram-media-server')
-pkgver=1
+pkgver=0.1
 pkgrel=1
 pkgdesc="Telegram bot for downloading torrent files"
 arch=('armv7h')
 url="https://github.com/NikitaDmitryuk/bbg-telegram-media-server"
 license=('')
-makedepends=('python' 'poetry' 'patchelf' 'ccache' 'minidlna')
+makedepends=('python' 'minidlna' 'python-pip' 'nuitka')
 options=(!strip)
 
-pkgver() {
+prepare() {
   cd ..
-  POETRY_VERSION=$(poetry version | cut -d' ' -f2)
-  echo $POETRY_VERSION
+  pip install python-telegram-bot libtorrent sqlite3
 }
 
 build() {
   cd ..
-  poetry run python -m nuitka --standalone --onefile --follow-imports --noinclude-unittest-mode=allow --output-filename=bbg-telegram-media-server bbg-telegram-media-server.py
+  python -m nuitka --standalone --onefile --follow-imports --noinclude-unittest-mode=allow --output-filename=bbg-telegram-media-server bbg-telegram-media-server.py
 }
 
 package() {
@@ -32,10 +31,10 @@ package() {
 
 pre_remove() {
 	systemctl disable --now bbg-telegram-media-server
-    systemctl disable --now minidlna
+  systemctl disable --now minidlna
 }
 
 post_install() {
 	systemctl enable --now bbg-telegram-media-server
-    systemctl enable --now minidlna
+  systemctl enable --now minidlna
 }

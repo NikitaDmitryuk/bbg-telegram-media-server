@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bbg-telegram-media-server"
-version = "0.1.0"
+version = "0.1"
 description = "Telegram bot for downloading torrent files"
 authors = ["NikitaDmitryuk <dmitryuk.nikita@gmail.com>"]
 readme = "README.md"
