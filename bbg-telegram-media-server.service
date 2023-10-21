@@ -1,0 +1,12 @@
+[Unit]
+Description=Telegram bot for media server
+After=minidlna.service
+PartOf=minidlna.service
+Requires=minidlna.service
+
+[Service]
+EnvironmentFile=/etc/bbg-telegram-media-server/bbg-telegram-media-server.conf
+ExecStart=/usr/bin/bbg-telegram-media-server $WORKDIR
+
+[Install]
+WantedBy=multi-user.target

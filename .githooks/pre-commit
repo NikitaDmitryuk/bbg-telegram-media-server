@@ -1,0 +1,6 @@
+#! /bin/sh
+
+echo "Start pre-commit hook"
+.githooks/lint.sh
+CHECK_RESULT=$((CHECK_RESULT+$?))
+exit $CHECK_RESULT
