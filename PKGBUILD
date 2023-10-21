@@ -6,7 +6,8 @@ pkgdesc="Telegram bot for downloading torrent files"
 arch=('armv7h')
 url="https://github.com/NikitaDmitryuk/bbg-telegram-media-server"
 license=('')
-makedepends=('python' 'minidlna' 'python-pip' 'nuitka')
+makedepends=('python' 'python-pip' 'nuitka')
+depends=('minidlna')
 options=(!strip)
 
 prepare() {
