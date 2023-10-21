@@ -7,7 +7,6 @@ arch=('armv7h')
 url="https://github.com/NikitaDmitryuk/bbg-telegram-media-server"
 license=('')
 makedepends=('python' 'python-pip' 'nuitka')
-depends=('minidlna')
 options=(!strip)
 
 prepare() {
