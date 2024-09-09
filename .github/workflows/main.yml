@@ -1,0 +1,20 @@
+name: create_deb_package
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build_and_release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build bbg_telegram_media_server.py
+        shell: bash
+        run: ./dockcross-linux-armv7a-lts bash -c './entrypoint.sh'
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            bbg-telegram-media-server_*.deb
